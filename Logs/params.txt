@@ -1,0 +1,4 @@
+Train:
+Batch Size: 20
+Number of epoches: 50
+----------------

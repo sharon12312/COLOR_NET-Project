@@ -80,6 +80,6 @@ print('---------------------')
 # Write parameters to a local file
 with open('./Logs/params.txt', 'a') as the_file:
     the_file.write('Train:'  + '\n')
-    the_file.write('Batch Size: ' +  str(batch_size) + '\n')
+    the_file.write('Batch Size: ' +  str(Batch_size) + '\n')
     the_file.write('Number of epoches: ' + str(Epochs) + '\n')
     the_file.write('----------------\n')
