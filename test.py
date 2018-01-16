@@ -23,14 +23,14 @@ loaded_model.compile(optimizer='adam', loss='mse')
 
 def train():
     #Load Train32
-    for filename in os.listdir('./Images/'):                 ### sys.argv[1] - change
-        image = img_to_array(load_img('./Images/'+filename))
+    for filename in os.listdir(sys.argv[1]):
+        image = img_to_array(load_img(sys.argv[1]+filename))
         image = np.array(image, dtype=float)
         X = rgb2lab(1.0/255*image)[:,:,0]
         X = X.reshape(1, 32, 32, 1)
 
         #open image with Image object for resize later
-        img = Image.open('./Images/'+filename)
+        img = Image.open(sys.argv[1]+filename)
 
         #Prdict
         output = loaded_model.predict(X)
@@ -53,8 +53,8 @@ def train():
         Y = rgb2lab(1.0/255*lab2rgb(cur))[:,:,1:]
         Y /= 128
         Y = Y.reshape(1, 96, 96, 2)
-        imsave("./Results/ResultImg_"+filename+".jpg", lab2rgb(cur))
-
+        # imsave("./Results/ResultImg_"+filename+".jpg", lab2rgb(cur))
+        imsave(sys.argv[1]+filename.split('.')[0]+".jpg", lab2rgb(cur))
 def main():
     train()
 
