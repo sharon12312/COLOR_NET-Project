@@ -16,12 +16,12 @@ json_file.close()
 loaded_model = model_from_json(loaded_model_json)
 
 # load weights into new model
-loaded_model.load_weights("./Models/color_tensorflow_end.h5")
+loaded_model.load_weights("./Models/color_net_model_old.h5")
 print("Loaded model from disk..")
 
 loaded_model.compile(optimizer='adam', loss='mse')
 
-def train():
+def predict():
     #Load Train32
     for filename in os.listdir(sys.argv[1]):
         image = img_to_array(load_img(sys.argv[1]+filename))
@@ -36,7 +36,6 @@ def train():
         output = loaded_model.predict(X)
         output *= 128
 
-
         #resize black and white photo to 96X96X1
         new_img = img.resize((96, 96), Image.ANTIALIAS)
         new_img = np.array(new_img, dtype=float)
@@ -49,13 +48,9 @@ def train():
         cur[:,:,0] = X_96[0][:,:,0]
         cur[:,:,1:] = output[0]
 
-        #Prepare photo to evaluate
-        Y = rgb2lab(1.0/255*lab2rgb(cur))[:,:,1:]
-        Y /= 128
-        Y = Y.reshape(1, 96, 96, 2)
         # imsave("./Results/ResultImg_"+filename+".jpg", lab2rgb(cur))
-        imsave(sys.argv[1]+filename.split('.')[0]+".jpg", lab2rgb(cur))
+        imsave(sys.argv[1] + filename.split('.')[0]+"x.jpg", lab2rgb(cur))
 def main():
-    train()
+    predict()
 
 main()

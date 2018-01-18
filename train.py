@@ -3,11 +3,14 @@ from keras.models import Sequential
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 import numpy as np
 import os
+from keras.models import load_model
 from skimage.color import rgb2lab, lab2rgb, rgb2gray, gray2rgb
 
 # Parameters of Model
 Batch_size = 20
-Epochs = 50
+Epochs = 100
+Load_model = True
+model_path = './Models/color_net_model_old.h5'
 
 # Get images
 X = []
@@ -27,22 +30,27 @@ for filename in os.listdir('./Train32/'):
 X = np.array(X, dtype=float)
 Y = np.array(Y, dtype=float)
 
-# Building the neural network
-model = Sequential()
-model.add(InputLayer(input_shape=(None, None, 1)))
-model.add(Conv2D(8, (3, 3), activation='relu', padding='same', strides=2))
-model.add(Conv2D(8, (3, 3), activation='relu', padding='same'))
-model.add(Conv2D(16, (3, 3), activation='relu', padding='same'))
-model.add(Conv2D(16, (3, 3), activation='relu', padding='same', strides=2))
-model.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
-model.add(Conv2D(32, (3, 3), activation='relu', padding='same', strides=2))
-model.add(UpSampling2D((2, 2)))
-model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
-model.add(UpSampling2D((2, 2)))
-model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
-model.add(UpSampling2D((3, 3)))
-model.add(UpSampling2D((2, 2)))
-model.add(Conv2D(2, (3, 3), activation='tanh', padding='same'))
+# Load Model
+if Load_model and os.path.exists(model_path):
+    print('==> loading pre-trained model')
+    model = load_model(model_path)
+else:
+    # Building the neural network
+    model = Sequential()
+    model.add(InputLayer(input_shape=(None, None, 1)))
+    model.add(Conv2D(8, (3, 3), activation='relu', padding='same', strides=2))
+    model.add(Conv2D(8, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(16, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(16, (3, 3), activation='relu', padding='same', strides=2))
+    model.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(32, (3, 3), activation='relu', padding='same', strides=2))
+    model.add(UpSampling2D((2, 2)))
+    model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(UpSampling2D((2, 2)))
+    model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(UpSampling2D((3, 3)))
+    model.add(UpSampling2D((2, 2)))
+    model.add(Conv2D(2, (3, 3), activation='tanh', padding='same'))
 
 # Finish model
 model.compile(optimizer='adam', loss='mse')
@@ -66,7 +74,7 @@ model.fit_generator(generator(X ,Y,Batch_size), epochs=Epochs, steps_per_epoch=1
 model_json = model.to_json()
 with open("model.json", "w") as json_file:
     json_file.write(model_json)
-model.save_weights("./Models/color_tensorflow_end.h5")
+model.save_weights("./Models/color_net_model_old.h5")
 
 print('Finished to train dataset.')
 
